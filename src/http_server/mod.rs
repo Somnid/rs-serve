@@ -5,6 +5,7 @@ use std::str;
 use super::server_io;
 use super::server_config::ServerConfig;
 use super::mime_mapper::MimeMapper;
+use super::path_helper;
 mod http_responder;
 mod http_request;
 
@@ -40,7 +41,7 @@ impl HttpServer {
 	fn handle_connection(&self, mut stream: TcpStream){
 		match self.parse(&stream) {
 			Ok(request) => {
-				let file_path = format!("{}{}", self.base_path, &request.uri);
+				let file_path = format!("{}{}", self.base_path, path_helper::normalize_path(&request.uri));
 				match server_io::read_file_bytes(&file_path) {
 					Ok(mut file_content) => respond(&mut stream, &mut file_content, self.mime_mapper.map_mime_type(&file_path)),
 					Err(error) => respond(&mut stream, &mut error.into_bytes(), Some("text/plain".to_string()))

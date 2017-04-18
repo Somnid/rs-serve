@@ -8,6 +8,7 @@ mod server_config;
 mod http_server;
 mod text_parser;
 mod mime_mapper;
+mod path_helper;
 
 fn main() {
 	let config: server_config::ServerConfig = server_io::read_file_json("config.json".to_string()).unwrap();
