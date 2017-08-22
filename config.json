@@ -1,5 +1,12 @@
 {
 	"basePath" : "../../",
 	"host" : "127.0.0.1",
-	"port" : "1339"
+	"port" : 1339,
+	"globalHeaders" : {
+		"Access-Control-Allow-Origin" : "*"
+	},
+	"proxy" : {
+		"endpoint" : "/proxy",
+		"destination" : "http://www.google.com"
+	}
 }
