@@ -9,17 +9,20 @@ mod path_helper;
 mod server_config;
 mod server_io;
 mod responder;
+mod mime_mapper;
 
 use hyper::server::Server;
 use responder::Responder;
 
 fn main() {
 	let config: server_config::ServerConfig = server_io::read_file_json("config.json".to_string()).unwrap();
+	let host = config.host.clone();
+	let port = config.port.clone();
 	let responder = Responder::new(config);
 
-	//println!("using config values: {:?}", debug);
+	println!("Starting server on: {}:{}", host, port);
 
-	Server::http("127.0.0.1:1340")
+	Server::http(format!("{}:{}", host, port))
 		.unwrap()
 		.handle(responder)
 		.unwrap();

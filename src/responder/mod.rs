@@ -10,6 +10,7 @@ use super::server_config::{ServerConfig,ProxyConfig};
 use super::path_helper;
 use super::server_io;
 use super::traits::is_empty::IsEmpty;
+use super::mime_mapper::*;
 
 pub struct Responder {
     base_path: String,
@@ -50,11 +51,13 @@ impl Responder {
         let mut res_body = res.start().unwrap();
         res_body.write_all(message.as_bytes()).unwrap();
     }
-    fn content_result(&self, res: server::Response, uri: &str) {
+    fn content_result(&self, mut res: server::Response, uri: &str) {
         let file_path = path_helper::normalize_path(&format!("{}{}", self.base_path, uri));
         let content_result = server_io::read_file_bytes(file_path);
 
         if let Ok(content) = content_result {
+            res.headers_mut()
+                .set_raw("Content-Type", vec![map_mime_type(uri).as_bytes().to_vec()]);
             self.respond_success(res, &content);
         }  else {
             self.respond_not_found(res, &format!("could not find file {}", &uri));
